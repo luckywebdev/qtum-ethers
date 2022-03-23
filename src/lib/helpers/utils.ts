@@ -743,3 +743,105 @@ export async function serializeTransactionWith(utxos: Array<any>, neededAmount: 
     const serialized = txToBuffer(qtumTx).toString('hex');
     return serialized;
 }
+
+export async function getOutputScriptHexForLedger(utxos: Array<any>, neededAmount: string, tx: TransactionRequest, transactionType: number): Promise<Tx> {
+    // Building the QTUM tx that will eventually be serialized.
+    let qtumTx: Tx = { version: 2, locktime: 0, vins: [], vouts: [] };
+    // reduce precision in gasPrice to 1 satoshi
+    tx.gasPrice = dropPrecisionLessThanOneSatoshi(BigNumberEthers.from(tx.gasPrice).toString());
+    const total = BigNumberEthers.from(new BigNumber(neededAmount + `e+8`).toString());
+    // in ethereum, the way to send your entire balance is to solve a simple equation:
+    // amount to send in wei = entire balance in wei - (gas limit * gas price)
+    // in order to properly be able to spend all UTXOs we need compute
+    // we need to filter outputs that are dust
+    // something is considered dust
+    checkLostPrecisionInGasPrice(BigNumberEthers.from(tx.gasPrice).toNumber());
+    const satoshiPerKb = BigNumberEthers.from(tx.gasPrice).mul(10);
+    console.log('[qtum-qnekt 4 - getOutputScriptHexForLedger 1]', tx, total, satoshiPerKb.toString())
+
+    const vouts: any = [];
+    if (transactionType === GLOBAL_VARS.CONTRACT_CREATION) {
+        const contractCreateVout = getContractVout(
+            BigNumberEthers.from(tx.gasPrice).toNumber(),
+            BigNumberEthers.from(tx.gasLimit).toNumber(),
+            // @ts-ignore
+            tx.data,
+            "",
+            // OP_CREATE cannot send QTUM when deploying contract
+            new BigNumber(BigNumberEthers.from("0x0").toNumber() + `e-8`).toFixed(8),
+        );
+        vouts.push(contractCreateVout);
+        qtumTx.vouts.push(contractCreateVout);
+    } else if (transactionType === GLOBAL_VARS.CONTRACT_CALL) {
+        const contractVoutValue = !!tx.value === true ?
+            new BigNumber(BigNumberEthers.from(tx.value).toNumber() + `e-8`).toNumber() :
+            new BigNumber(BigNumberEthers.from("0x0").toNumber() + `e-8`).toFixed(8);
+        const contractCallVout = getContractVout(
+            BigNumberEthers.from(tx.gasPrice).toNumber(),
+            BigNumberEthers.from(tx.gasLimit).toNumber(),
+            // @ts-ignore
+            tx.data,
+            tx.to,
+            contractVoutValue,
+        );
+        vouts.push(contractCallVout);
+        qtumTx.vouts.push(contractCallVout);
+    } else if (transactionType === GLOBAL_VARS.P2PKH) {
+        vouts.push('p2pkh')
+    } else if (transactionType === GLOBAL_VARS.DEPLOY_ERROR) {
+        // user requested sending QTUM with OP_CREATE which will result in the QTUM being lost
+        throw new Error("Cannot send QTUM to contract when deploying a contract");
+    } else {
+        throw new Error("Internal error: unknown transaction type: " + transactionType);
+    }
+    console.log('[qtum-qnekt 4 - getOutputScriptHexForLedger 2]', vouts, qtumTx)
+
+    // @ts-ignore
+    const hash160PubKey = tx.from.split("0x")[1];
+    // @ts-ignore
+    const [vins, amounts, availableAmount, fee, changeAmount, changeType] = await addVins(
+        vouts,
+        utxos,
+        neededAmount,
+        total.toString(),
+        satoshiPerKb.toString(),
+        hash160PubKey,
+    );
+    console.log('[qtum-qnekt 4 - getOutputScriptHexForLedger 3]', vins, amounts, availableAmount, fee, changeAmount, changeType)
+
+    if (vins.length === 0) {
+        throw new Error("Couldn't find any vins");
+    }
+
+    qtumTx.vins = vins;
+
+    if (transactionType === GLOBAL_VARS.P2PKH) {
+        // @ts-ignore
+        const hash160Address = tx.to.split("0x")[1];
+        let value: number;
+        if (changeAmount) {
+            // not using all
+            value = new BigNumber(BigNumberEthers.from(tx.value).toNumber()).toNumber()
+        } else {
+            value = new BigNumber(availableAmount).toNumber();
+        }
+
+        const p2pkhVout = {
+            script: p2pkhScript(Buffer.from(hash160Address, "hex")),
+            value: value
+        };
+        qtumTx.vouts.push(p2pkhVout);
+    }
+
+    // add change if needed
+    if (changeAmount) {
+        qtumTx.vouts.push({
+            // @ts-ignore
+            script: scriptMap[changeType](Buffer.from(hash160PubKey, "hex")),
+            value: changeAmount.toNumber()
+        })
+    }
+    console.log('[qtum-qnekt 4 - getOutputScriptHexForLedger 4]', qtumTx)
+
+    return qtumTx;
+}
