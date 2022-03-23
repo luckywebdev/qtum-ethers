@@ -1,5 +1,6 @@
-import { TransactionRequest } from "@ethersproject/abstract-provider";
-import { Tx } from './helpers/utils';
+import { Provider, TransactionRequest } from "@ethersproject/abstract-provider";
 export declare class QtumLedger {
-    signTransaction(transaction: TransactionRequest): Promise<Tx>;
+    readonly provider?: Provider;
+    constructor(provider?: Provider);
+    signTransaction(transaction: TransactionRequest): Promise<Array<any>>;
 }

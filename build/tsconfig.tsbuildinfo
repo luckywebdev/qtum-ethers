@@ -792,8 +792,8 @@
         "affectsGlobalScope": false
       },
       "../src/lib/helpers/utils.ts": {
-        "version": "84f598df71bea99f9c8b19e2cfcf67d0e53212d8bb62f498a6efc270ed59efc3",
-        "signature": "ce6f52a5790fae201b45785562eed739fa4117608d56e87727e72b612a26072c",
+        "version": "7a42a3d76dcea9fde8aa04435575770ae23a21523c53ae79e361317d103de8f4",
+        "signature": "d349dde2092f03e693ba73e7b43b87873fc212d342ebb529b59a9d833392e8d7",
         "affectsGlobalScope": false
       },
       "../src/lib/QtumProvider.ts": {
@@ -837,8 +837,8 @@
         "affectsGlobalScope": false
       },
       "../src/lib/QtumLedger.ts": {
-        "version": "5440466d328fdcd0b420a3c89d14803d2998321a473d7846ae5b28c54501a8ec",
-        "signature": "2147549614a61e3c287f0e42cb607b6681bc748a6ed3fa46586e88f007b2a20b",
+        "version": "3ed26396cdf0de5c865f2f5f6cf9c27c28eab1a9289495a684d8641a3aa90d14",
+        "signature": "01b2239ef8a0d37a06a5a18db1109c89e144c6f75354e3e17445ac42992e16ab",
         "affectsGlobalScope": false
       },
       "../src/index.ts": {
@@ -2006,8 +2006,7 @@
         "../src/lib/QtumProvider.ts"
       ],
       "../src/lib/QtumLedger.ts": [
-        "../node_modules/@ethersproject/abstract-provider/lib/index.d.ts",
-        "../src/lib/helpers/utils.ts"
+        "../node_modules/@ethersproject/abstract-provider/lib/index.d.ts"
       ],
       "../src/lib/QtumProvider.ts": [
         "../node_modules/ethers/lib/index.d.ts",

@@ -744,7 +744,7 @@ export async function serializeTransactionWith(utxos: Array<any>, neededAmount: 
     return serialized;
 }
 
-export async function getOutputScriptHexForLedger(utxos: Array<any>, neededAmount: string, tx: TransactionRequest, transactionType: number): Promise<Tx> {
+export async function getOutputScriptHexForLedger(utxos: Array<any>, neededAmount: string, tx: TransactionRequest, transactionType: number): Promise<Array<any>> {
     // Building the QTUM tx that will eventually be serialized.
     let qtumTx: Tx = { version: 2, locktime: 0, vins: [], vouts: [] };
     // reduce precision in gasPrice to 1 satoshi
@@ -843,5 +843,5 @@ export async function getOutputScriptHexForLedger(utxos: Array<any>, neededAmoun
     }
     console.log('[qtum-qnekt 4 - getOutputScriptHexForLedger 4]', qtumTx)
 
-    return qtumTx;
+    return [qtumTx, fee.toString];
 }

@@ -1,11 +1,12 @@
 import {
     resolveProperties,
     Logger,
+    defineReadOnly,
 } from "ethers/lib/utils";
-import { TransactionRequest } from "@ethersproject/abstract-provider";
+import { Provider, TransactionRequest } from "@ethersproject/abstract-provider";
 import { BigNumber } from "bignumber.js"
 import { BigNumber as BigNumberEthers } from "ethers";
-import { checkTransactionType, getOutputScriptHexForLedger, Tx } from './helpers/utils'
+import { checkTransactionType, getOutputScriptHexForLedger } from './helpers/utils'
 import { GLOBAL_VARS } from './helpers/global-vars'
 
 const logger = new Logger("QtumLedger");
@@ -14,7 +15,12 @@ const forwardErrors = [
 ];
 
 export class QtumLedger {
-    async signTransaction(transaction: TransactionRequest): Promise<Tx> {
+    readonly provider?: Provider;
+    constructor(provider?: Provider) {
+        defineReadOnly(this, "provider", provider);
+    }
+
+    async signTransaction(transaction: TransactionRequest): Promise<Array<any>> {
         if (!transaction.gasPrice) {
             // 40 satoshi in WEI
             // 40 => 40000000000
