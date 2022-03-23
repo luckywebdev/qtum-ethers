@@ -5,7 +5,7 @@ import {
 import { Provider, TransactionRequest } from "@ethersproject/abstract-provider";
 import { BigNumber } from "bignumber.js"
 import { BigNumber as BigNumberEthers } from "ethers";
-import { checkTransactionType, getOutputScriptHexForLedger, Tx } from './helpers/utils'
+import { checkTransactionType, getOutputScriptHexForLedger } from './helpers/utils'
 import { GLOBAL_VARS } from './helpers/global-vars'
 import { defineReadOnly } from "@ethersproject/properties";
 
@@ -14,15 +14,13 @@ const forwardErrors = [
     Logger.errors.INSUFFICIENT_FUNDS
 ];
 
-
-
 export class QtumLedger {
     readonly provider?: Provider;
     constructor(provider?: Provider) {
         defineReadOnly(this, "provider", provider);
     }
 
-    async signTransaction(transaction: TransactionRequest): Promise<Tx> {
+    async signTransaction(transaction: TransactionRequest): Promise<Array<any>> {
         if (!transaction.gasPrice) {
             // 40 satoshi in WEI
             // 40 => 40000000000
