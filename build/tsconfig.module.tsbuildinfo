@@ -792,7 +792,7 @@
         "affectsGlobalScope": false
       },
       "../src/lib/helpers/utils.ts": {
-        "version": "84f598df71bea99f9c8b19e2cfcf67d0e53212d8bb62f498a6efc270ed59efc3",
+        "version": "2b7f50c9f184cbf164530d7e5c9d3f6f99b8fc65a93cf325e8a32397099d75d5",
         "signature": "ce6f52a5790fae201b45785562eed739fa4117608d56e87727e72b612a26072c",
         "affectsGlobalScope": false
       },
@@ -837,8 +837,8 @@
         "affectsGlobalScope": false
       },
       "../src/lib/QtumLedger.ts": {
-        "version": "5440466d328fdcd0b420a3c89d14803d2998321a473d7846ae5b28c54501a8ec",
-        "signature": "2147549614a61e3c287f0e42cb607b6681bc748a6ed3fa46586e88f007b2a20b",
+        "version": "64b069b4ae911d1643f0b541c4008f4f90820b167149266695b5e8847f6f2359",
+        "signature": "04b480df4951e625ab9a79b6cd95d073ecb7ced5f3b63a47c0b37547efaa214f",
         "affectsGlobalScope": false
       },
       "../src/index.ts": {
@@ -1424,6 +1424,7 @@
       ],
       "../src/lib/QtumLedger.ts": [
         "../node_modules/@ethersproject/abstract-provider/lib/index.d.ts",
+        "../node_modules/@ethersproject/properties/lib/index.d.ts",
         "../node_modules/bignumber.js/bignumber.d.ts",
         "../node_modules/ethers/lib/index.d.ts",
         "../node_modules/ethers/lib/utils.d.ts",

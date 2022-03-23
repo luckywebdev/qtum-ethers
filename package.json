@@ -23,7 +23,7 @@
     "wif": "^2.0.6"
   },
   "name": "qtum-qnekt",
-  "version": "0.1.2",
+  "version": "0.1.2.2",
   "main": "./build/main/index.js",
   "license": "ISC",
   "homepage": "https://github.com/luckywebdev/qtum-ethers",

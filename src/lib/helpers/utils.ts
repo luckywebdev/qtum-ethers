@@ -327,10 +327,12 @@ export async function addVins(outputs: Array<any>, utxos: Array<ListUTXOs>, need
     let change;
     let inputsAmount = BigNumberEthers.from(0);
     const neededAmountBN = BigNumberEthers.from(new BigNumber(neededAmount + `e+8`).toString());
+    console.log('[qtum-qnekt 5 - addvins - 1]', gasPrice.toString(), totalNeeded.toString(), neededAmountBN.toString());
     for (let i = 0; i < utxos.length; i++) {
         // @ts-ignore
         utxos[i].amountNumber = parseFloat(parseFloat(utxos[i].amount).toFixed(8));
     }
+    console.log('[qtum-qnekt 5 - addvins - 2]', utxos);
     const spendableUtxos = utxos.filter((utxo) => {
         if (utxo.safe === undefined || !utxo.safe) {
             // unsafe to spend utxo
@@ -344,10 +346,12 @@ export async function addVins(outputs: Array<any>, utxos: Array<ListUTXOs>, need
         }
         return true;
     });
+    console.log('[qtum-qnekt 5 - addvins - 3]', spendableUtxos);
     let vbytes = BigNumberEthers.from(GLOBAL_VARS.TX_OVERHEAD_BASE);
     const spendVSizeLookupMap = {
         p2pkh: BigNumberEthers.from(GLOBAL_VARS.TX_INPUT_BASE + GLOBAL_VARS.TX_INPUT_SCRIPTSIG_P2PKH).toNumber(),
     }
+    console.log('[qtum-qnekt 5 - addvins - 4]', vbytes.toString(), spendVSizeLookupMap);
     const changeType = 'p2pkh';
     const outputVSizeLookupMap = {
         p2pkh: BigNumberEthers.from(GLOBAL_VARS.TX_OUTPUT_BASE + GLOBAL_VARS.TX_OUTPUT_SCRIPTPUBKEY_P2PKH).toNumber(),
@@ -356,9 +360,11 @@ export async function addVins(outputs: Array<any>, utxos: Array<ListUTXOs>, need
         p2wsh2of3: BigNumberEthers.from(GLOBAL_VARS.TX_OUTPUT_BASE + GLOBAL_VARS.TX_OUTPUT_SCRIPTPUBKEY_P2WSH2OF3).toNumber(),
         p2tr: BigNumberEthers.from(GLOBAL_VARS.TX_OUTPUT_BASE + GLOBAL_VARS.TX_OUTPUT_SCRIPTPUBKEY_P2TR).toNumber(),
     }
+    console.log('[qtum-qnekt 5 - addvins - 5]', outputVSizeLookupMap);
     for (let i = 0; i < outputs.length; i++) {
         const output = outputs[i];
         let outputVSize: any = output;
+        console.log('[qtum-qnekt 5 - addvins - 6]', output, outputVSize);
         if (typeof output === "string") {
             if (!outputVSizeLookupMap.hasOwnProperty(output.toLowerCase())) {
                 throw new Error("Unsupported output script type: " + output.toLowerCase());
@@ -366,15 +372,19 @@ export async function addVins(outputs: Array<any>, utxos: Array<ListUTXOs>, need
                 // @ts-ignore
                 outputVSize = outputVSizeLookupMap[output.toLowerCase()];
             }
+            console.log('[qtum-qnekt 5 - addvins - 7-1]', outputVSize);
         } else if (output.hasOwnProperty('script') && output.hasOwnProperty('value')) {
             // longer script sizes require up to 3 vbytes to encode
             const scriptEncodingLength = encodingLength(output.script.byteLength) - 1;
             outputVSize = BigNumberEthers.from(GLOBAL_VARS.TX_OUTPUT_BASE + scriptEncodingLength + output.script.byteLength).toNumber();
+            console.log('[qtum-qnekt 5 - addvins - 7-2]', outputVSize);
         } else {
             outputVSize = BigNumberEthers.from(outputVSize).toNumber();
+            console.log('[qtum-qnekt 5 - addvins - 7-3]', outputVSize);
         }
 
         vbytes = vbytes.add(outputVSize);
+        console.log('[qtum-qnekt 5 - addvins - 8]', vbytes);
     }
     let needMoreInputs = true;
     let i = 0;
@@ -388,12 +398,14 @@ export async function addVins(outputs: Array<any>, utxos: Array<ListUTXOs>, need
         let script = Buffer.from(spendableUtxo.scriptPubKey);
         // all scripts will be p2pkh for now
         const typ: string = spendableUtxo.type || '';
+        console.log('[qtum-qnekt 5 - addvins - 9]', spendableUtxo, amount, script, typ);
         if (typ.toLowerCase() === "p2pkh") {
             script = p2pkhScript(Buffer.from(hash160PubKey, "hex"));
         }
         if (!spendVSizeLookupMap.hasOwnProperty(typ.toLowerCase())) {
             throw new Error("Unsupported spendable script type: " + typ.toLowerCase());
         }
+        console.log('[qtum-qnekt 5 - addvins - 10]', script);
         inputs.push({
             txid: Buffer.from(spendableUtxo.txid, 'hex'),
             vout: spendableUtxo.vout,
@@ -402,6 +414,7 @@ export async function addVins(outputs: Array<any>, utxos: Array<ListUTXOs>, need
             script: script,
             scriptSig: null
         });
+        console.log('[qtum-qnekt 5 - addvins - 11]', inputs);
         // @ts-ignore
         const outputVSize: number = spendVSizeLookupMap[typ.toLowerCase()];
         vbytes = vbytes.add(outputVSize);
@@ -409,6 +422,7 @@ export async function addVins(outputs: Array<any>, utxos: Array<ListUTXOs>, need
 
         inputsAmount = inputsAmount.add(utxoValue);
         amounts.push(utxoValue);
+        console.log('[qtum-qnekt 5 - addvins - 12]', outputVSize, vbytes, fee.toString(), inputsAmount.toString(), neededAmountBN.toString());
 
         if (neededAmountBN.eq(inputsAmount)) {
             if (i === spendableUtxos.length - 1) {
@@ -465,6 +479,7 @@ export async function addVins(outputs: Array<any>, utxos: Array<ListUTXOs>, need
         }
     }
 
+    console.log('[qtum-qnekt 5 - addvins - 13]', needMoreInputs);
     if (needMoreInputs) {
         const missing = neededAmountBN.sub(inputsAmount).toNumber()
         throw new Error("Need " + missing + " more satoshi");
@@ -472,6 +487,7 @@ export async function addVins(outputs: Array<any>, utxos: Array<ListUTXOs>, need
 
     const fee = BigNumberEthers.from(vbytes).mul(gasPrice);
     const availableAmount = inputsAmount.sub(fee).toNumber()
+    console.log('[qtum-qnekt 5 - addvins - 14]', fee.toString(), availableAmount.toString(), change?.toString(), changeType.toString());
 
     return [inputs, amounts, availableAmount, fee, change, changeType];
 }
