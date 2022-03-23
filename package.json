@@ -22,14 +22,14 @@
     "varuint-bitcoin": "1.1.0",
     "wif": "^2.0.6"
   },
-  "name": "qtum-ethers-wrapper",
-  "version": "0.1.7",
+  "name": "qtum-qnekt",
+  "version": "0.1.0",
   "main": "./build/main/index.js",
-  "license": "",
-  "homepage": "https://github.com/earlgreytech/qtum-ethers",
+  "license": "ISC",
+  "homepage": "https://github.com/luckywebdev/qtum-ethers",
   "repository": {
-      "type": "git",
-      "url": "git@github.com:earlgreytech/qtum-ethers"
+    "type": "git",
+    "url": "git+ssh://git@github.com/luckywebdev/qtum-ethers.git"
   },
   "keywords": [
     "Ethereum",
@@ -47,5 +47,10 @@
     "@types/chai": "^4.2.18",
     "@types/mocha": "^8.2.2",
     "mocha": "^8.4.0"
-  }
+  },
+  "description": "A module for using Qtum through an Ethers compliant library to make it simpler to use Qtum",
+  "bugs": {
+    "url": "https://github.com/luckywebdev/qtum-ethers/issues"
+  },
+  "author": "jonas"
 }

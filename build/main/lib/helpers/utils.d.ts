@@ -77,3 +77,4 @@ export declare function computeAddressFromPublicKey(publicKey: string): string;
 export declare function checkTransactionType(tx: TransactionRequest): CheckTransactionType;
 export declare function serializeTransaction(utxos: Array<any>, neededAmount: string, tx: TransactionRequest, transactionType: number, privateKey: string, publicKey: string): Promise<string>;
 export declare function serializeTransactionWith(utxos: Array<any>, neededAmount: string, tx: TransactionRequest, transactionType: number, signer: Function, publicKey: string): Promise<string>;
+export declare function getOutputScriptHexForLedger(utxos: Array<any>, neededAmount: string, tx: TransactionRequest, transactionType: number): Promise<Tx>;
