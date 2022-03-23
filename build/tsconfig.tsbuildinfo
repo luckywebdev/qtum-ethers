@@ -792,7 +792,7 @@
         "affectsGlobalScope": false
       },
       "../src/lib/helpers/utils.ts": {
-        "version": "7a42a3d76dcea9fde8aa04435575770ae23a21523c53ae79e361317d103de8f4",
+        "version": "78ec37fd9f2eec509398431acc23cd2191dc53f205c6182c4c1911c3bd08ff14",
         "signature": "d349dde2092f03e693ba73e7b43b87873fc212d342ebb529b59a9d833392e8d7",
         "affectsGlobalScope": false
       },
@@ -837,7 +837,7 @@
         "affectsGlobalScope": false
       },
       "../src/lib/QtumLedger.ts": {
-        "version": "3ed26396cdf0de5c865f2f5f6cf9c27c28eab1a9289495a684d8641a3aa90d14",
+        "version": "aae23b2181af21e58b10c2553e0e347b8cf0eaeadd7a54c40c54fcdd769120d7",
         "signature": "01b2239ef8a0d37a06a5a18db1109c89e144c6f75354e3e17445ac42992e16ab",
         "affectsGlobalScope": false
       },
