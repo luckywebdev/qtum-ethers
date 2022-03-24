@@ -938,11 +938,18 @@ export async function addVinsForLedger(outputs: Array<any>, utxos: Array<ListUTX
     return [inputs, amounts, availableAmount, fee, change, changeType];
 }
 
+function convFromNumberToBuffer(num: number): Buffer {
+    let b = new ArrayBuffer(4);
+    new DataView(b).setUint32(0, num);
+    let arrBuff = Array.from(new Uint8Array(b));
+    return reverse(Buffer.from(arrBuff))
+}
+
 export async function getOutputScriptHexForLedger(utxos: Array<any>, neededAmount: string, tx: TransactionRequest, transactionType: number): Promise<Array<any>> {
     // Building the QTUM tx that will eventually be serialized.
     let qtumTx: TxForLedger = { 
-        version: Buffer.from(new BigNumber(2).toString(), 'hex'),
-        locktime: Buffer.from(new BigNumber('0x00').toString(), 'hex'),
+        version: convFromNumberToBuffer(2),
+        locktime: convFromNumberToBuffer(0),
         inputs: [],
         outputs: []
     };
@@ -998,7 +1005,7 @@ export async function getOutputScriptHexForLedger(utxos: Array<any>, neededAmoun
     // @ts-ignore
     const hash160PubKey = tx.from.split("0x")[1];
     // @ts-ignore
-    const [vins, amounts, availableAmount, fee, changeAmount, changeType] = await addVins(
+    const [vins, amounts, availableAmount, fee, changeAmount, changeType] = await addVinsForLedger(
         vouts,
         utxos,
         neededAmount,
