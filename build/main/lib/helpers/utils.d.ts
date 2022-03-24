@@ -33,6 +33,12 @@ export interface TxVinWithoutNullScriptSig {
     script: Buffer;
     scriptSig: Buffer;
 }
+export interface TxVinForLedger {
+    prevout: Buffer;
+    script: Buffer;
+    sequence: Buffer;
+    tree?: Buffer;
+}
 export interface CloneTxVin {
     txid: Buffer;
     hash: Buffer;
@@ -45,6 +51,10 @@ export interface TxVout {
     script: Buffer;
     value: number;
 }
+export interface TxVoutForLedger {
+    script: Buffer;
+    amount: Buffer;
+}
 export interface CloneTx {
     version: number;
     locktime: number;
@@ -56,6 +66,17 @@ export interface Tx {
     locktime: number;
     vins: Array<TxVinWithNullScriptSig | TxVinWithoutNullScriptSig>;
     vouts: Array<TxVout>;
+}
+export interface TxForLedger {
+    version: Buffer;
+    locktime: Buffer;
+    inputs: Array<TxVinForLedger>;
+    outputs: Array<TxVoutForLedger>;
+    witness?: Buffer;
+    timestamp?: Buffer;
+    nVersionGroupId?: Buffer;
+    nExpiryHeight?: Buffer;
+    extraData?: Buffer;
 }
 export interface CheckTransactionType {
     transactionType: number;
@@ -77,4 +98,5 @@ export declare function computeAddressFromPublicKey(publicKey: string): string;
 export declare function checkTransactionType(tx: TransactionRequest): CheckTransactionType;
 export declare function serializeTransaction(utxos: Array<any>, neededAmount: string, tx: TransactionRequest, transactionType: number, privateKey: string, publicKey: string): Promise<string>;
 export declare function serializeTransactionWith(utxos: Array<any>, neededAmount: string, tx: TransactionRequest, transactionType: number, signer: Function, publicKey: string): Promise<string>;
+export declare function addVinsForLedger(outputs: Array<any>, utxos: Array<ListUTXOs>, neededAmount: string, total: string, gasPriceString: string, hash160PubKey: string): Promise<Array<any>>;
 export declare function getOutputScriptHexForLedger(utxos: Array<any>, neededAmount: string, tx: TransactionRequest, transactionType: number): Promise<Array<any>>;
