@@ -861,7 +861,7 @@ export async function addVinsForLedger(outputs: Array<any>, utxos: Array<ListUTX
         }
         inputs.push({
             prevout: Buffer.from(new BigNumber(spendableUtxo.vout).toString(), 'hex'),
-            sequence: Buffer.from('0xffffffff', 'hex'),
+            sequence: Buffer.from(new BigNumber('0xffffffff').toString(), 'hex'),
             script: script,
         });
         // @ts-ignore
@@ -939,7 +939,7 @@ export async function addVinsForLedger(outputs: Array<any>, utxos: Array<ListUTX
 }
 
 function convFromNumberToBuffer(num: number): Buffer {
-    let b = new ArrayBuffer(4);
+    let b = new ArrayBuffer(255);
     new DataView(b).setUint32(0, num);
     let arrBuff = Array.from(new Uint8Array(b));
     return reverse(Buffer.from(arrBuff))
@@ -948,7 +948,7 @@ function convFromNumberToBuffer(num: number): Buffer {
 export async function getOutputScriptHexForLedger(utxos: Array<any>, neededAmount: string, tx: TransactionRequest, transactionType: number): Promise<Array<any>> {
     // Building the QTUM tx that will eventually be serialized.
     let qtumTx: TxForLedger = { 
-        version: convFromNumberToBuffer(2),
+        version: convFromNumberToBuffer(1),
         locktime: convFromNumberToBuffer(0),
         inputs: [],
         outputs: []
