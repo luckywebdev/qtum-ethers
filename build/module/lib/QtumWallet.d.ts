@@ -7,7 +7,8 @@ export declare const QTUM_BIP44_PATH = "m/44'/88'/0'/0/0";
 export declare const SLIP_BIP44_PATH = "m/44'/2301'/0'/0/0";
 export declare const defaultPath = "m/44'/2301'/0'/0/0";
 export declare class QtumWallet extends IntermediateWallet {
-    constructor(privateKey: any, provider?: any);
+    private opts;
+    constructor(privateKey: any, provider?: any, opts?: any);
     protected serializeTransaction(utxos: Array<any>, neededAmount: string, tx: TransactionRequest, transactionType: number): Promise<string>;
     /**
      * Override to build a raw QTUM transaction signing UTXO's

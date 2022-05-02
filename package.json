@@ -11,6 +11,7 @@
     "buffer-reverse": "^1.0.1",
     "chai": "^4.3.4",
     "crypto": "^1.0.1",
+    "elliptic": "6.5.4",
     "ethers": "^5.0.23",
     "hash.js": "^1.1.7",
     "pushdata-bitcoin": "^1.0.1",
@@ -22,11 +23,11 @@
     "varuint-bitcoin": "1.1.0",
     "wif": "^2.0.6"
   },
-  "name": "qtum-qnekt",
-  "version": "0.1.6",
+  "name": "qtum-ethers-wrapper",
+  "version": "1.0.0",
   "main": "./build/main/index.js",
-  "license": "ISC",
-  "homepage": "https://github.com/luckywebdev/qtum-ethers",
+  "license": "",
+  "homepage": "https://github.com/qtumproject/qtum-ethers",
   "repository": {
     "type": "git",
     "url": "git+ssh://git@github.com/luckywebdev/qtum-ethers.git"

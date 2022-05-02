@@ -1,7 +1,30 @@
 # Qtum Ethers
 A module for using Qtum through an Ethers compliant library to make it simpler to use Qtum
 
-# Upgrading from 0.0.3
+# Upgrading from 0.x.x => 1.x.x
+TLDR: Breaking change in gas price, if you hardcode gas price then update your code otherwise you are probably ok upgrading to this version
+
+This version has a breaking change in gas price
+Janus has a bug in eth_gasPrice that returns GWEI instead of WEI
+If you have hardcoded gas price in your code, you will need to update it from 0x9502f9000 to 0x5d21dba000
+If you rely on eth_gasPrice then nothing else should be required
+
+This release also works around the bug in Janus and will detect when it is fixed and act correctly
+The worst case scenario to not upgrading to this release is when the Janus server you talk to gets upgrade
+your transactions will have higher transaction fees as eth_gasPrice will return a larger number
+
+Keep in mind that Qtum rejects transactions with absurdly high transaction fees, so the network will prevent
+accidental out of control spending by rejecting transactions - though this bug will not increase fees anywhere near that
+
+We will be deploying bugfixed Janus to our mainnet server fleet
+
+This release also improves transaction fee calculation and will result in lower transaction fees
+
+Upgrading to this version will warn you when creating transactions with Janus instances that have not been upgraded after May 30th, 2022
+
+**After August 1st 2022, the warnings will turn into errors and you will be unable to create transactions with old Janus instances**
+
+# Upgrading from 0.0.3 => 0.1.x
 public key address generation now follows QTUM behavior, the same private keys will now generate different addresses
 
 adds support for importing WIF private keys
@@ -37,7 +60,10 @@ const provider = testnetProvider;
 const privkey = "99dda7e1a59655c9e02de8592be3b914df7df320e72ce04ccf0427f9a366ec6e"
 const signer = new Wallet(
     privkey,
-    provider
+    provider,
+    {
+        filterDust: true, // optional, will default to true in a future release
+    }
 )
 // or create a random account and get the mnemonic
 // const signer = Wallet.createRandom(/*{ path = SLIP_BIP44_PATH }*/}).connect(provider);
@@ -53,7 +79,7 @@ const simpleStore = new ContractFactory(ABI, BYTECODE, signer);
 async function deployToken() {
     const deployment = await simpleStore.deploy({
         gasLimit: "0x7a120", // 500,000
-        gasPrice: "0x9502f9000" // in WEI, not Satoshis
+        gasPrice: "0x5d21dba000" // in WEI, not Satoshis
     });
     await deployment.deployed();
     return deployment.address
@@ -64,7 +90,7 @@ async function transferToken(contractAddress, from, to, value) {
     const name = await qrc20.transfer(from, to, value,
         {
             gasLimit: "0x62521", // 62521
-            gasPrice: "0x9502f9000", // in WEI, not Satoshis
+            gasPrice: "0x5d21dba000", // in WEI, not Satoshis
         }
     );
 }
@@ -78,8 +104,6 @@ await transferToken(contractAddress, "0x...", "0x...", 1);
 # Notes
 
 - Issues
-
-At the point of grabbing UTXO's from janus, the estimated TX size is unknown
 
 Qtum estimate gas function is not perfect so eth_estimateGas has a 20% buffer for gas limit
 
