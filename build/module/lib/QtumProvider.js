@@ -27,6 +27,47 @@ export class QtumProvider extends providers.JsonRpcProvider {
             throw error;
         }
     }
+    async isClientVersionGreaterThanEqualTo(major, minor, patch) {
+        const ver = await this.getClientVersion();
+        return compareVersion(ver, major, minor, patch) >= 0;
+    }
+    async getClientVersion() {
+        await this.getNetwork();
+        const version = await this.perform("web3_clientVersion", []);
+        if (version === "QTUM ETHTestRPC/ethereum-js") {
+            // 0.1.4, versions after this with a proper version string is 0.2.0
+            // this version contains a bug we have to work around
+            return {
+                name: "Janus",
+                version: "0.1.4",
+                major: 0,
+                minor: 1,
+                patch: 4,
+                system: "linux-amd64",
+            };
+        }
+        else {
+            const versionInfo = version.split("/");
+            if (versionInfo.length >= 4) {
+                const semver = this.parseVersion(versionInfo[1]);
+                return {
+                    name: versionInfo[0],
+                    version: versionInfo[1],
+                    major: semver[0] || 0,
+                    minor: semver[1] || 0,
+                    patch: semver[2] || 0,
+                    system: versionInfo[2],
+                };
+            }
+        }
+        return {
+            name: version,
+        };
+    }
+    parseVersion(version) {
+        const semver = version.split("-")[0];
+        return semver.replace(/a-zA-Z\./g, "").split(".").map(i => parseInt(i) || 0);
+    }
     /**
      * Function to handle grabbing UTXO's from janus
      * prepareRequest in https://github.com/ethers-io/ethers.js/blob/master/packages/providers/src.ts/json-rpc-provider.ts
@@ -43,6 +84,9 @@ export class QtumProvider extends providers.JsonRpcProvider {
     prepareRequest(method, params) {
         if (method === "qtum_qetUTXOs") {
             return ["qtum_getUTXOs", params];
+        }
+        else if (method === "web3_clientVersion") {
+            return ["web3_clientVersion", params];
         }
         return super.prepareRequest(method, params);
     }

@@ -11,6 +11,7 @@
     "buffer-reverse": "^1.0.1",
     "chai": "^4.3.4",
     "crypto": "^1.0.1",
+    "elliptic": "6.5.4",
     "ethers": "^5.0.23",
     "hash.js": "^1.1.7",
     "pushdata-bitcoin": "^1.0.1",

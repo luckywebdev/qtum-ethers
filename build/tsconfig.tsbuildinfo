@@ -792,6 +792,7 @@
         "affectsGlobalScope": false
       },
       "../src/lib/helpers/utils.ts": {
+<<<<<<< HEAD
         "version": "eda7d3cd8630ed951322c6ea5b85cdadd0548f129921ea6f44e6a81befe9b61d",
         "signature": "1e4c0e94a4f29766cf4888f8ce71594b79445af3ac2193e4538e4c552caf398b",
         "affectsGlobalScope": false
@@ -799,6 +800,15 @@
       "../src/lib/QtumProvider.ts": {
         "version": "ab28864e4058e6ace303b99ca8c4d7d4174958c331f93d092625117d09505794",
         "signature": "7643ea41363670c3877b6f8a5af888d694eeb617c3492a23fb8e05001c3b35aa",
+=======
+        "version": "27dcdfaef4f54dc4ad68c2ca277d8cf4c29612257ad01510c32c0d2f3902d01c",
+        "signature": "3d1e59b16fe97e2adab31b3e5bc132f808a5a60459dd50f4b52c534be21280a9",
+        "affectsGlobalScope": false
+      },
+      "../src/lib/QtumProvider.ts": {
+        "version": "adada3d698b3c0cfccf5f02c304ab15550c9d98292a0111139a1a1b90c94bd7a",
+        "signature": "bb99c59844a04cf785c2cc57c300a3c297c03c719f3bcf1ea8af395d69f5a27f",
+>>>>>>> 437954450c2c22ae49b87628ea0a7c927628af21
         "affectsGlobalScope": false
       },
       "../src/lib/QtumFunctionProvider.ts": {
@@ -807,13 +817,18 @@
         "affectsGlobalScope": false
       },
       "../src/lib/helpers/IntermediateWallet.ts": {
-        "version": "f5ced9ae522c799ed37155b8c8bb69bf7a448fcf07e04d423dcb0ffbe7293fe5",
-        "signature": "1faeb25718f4f65649937286fad4bc0f40694dec053c485b0b1f89ac96f0b8e5",
+        "version": "a765ff1596ef7d64439164366db4ff1c6c0ac4f80576337184417407b144be02",
+        "signature": "a8cb9c44905fa4b831edebad1497b0c32ee29bf20a3c060c59c741596ad33e1f",
         "affectsGlobalScope": false
       },
       "../src/lib/QtumWallet.ts": {
+<<<<<<< HEAD
         "version": "11a51b9ae5c0fa03459f0a98a0124e9900f647e7b4abe8941fbe08efb39c7ecf",
         "signature": "2430362dd4ee234e9193d69693d390da6d938be756f354666c01cfd3b650ab36",
+=======
+        "version": "54d3d4c56f43bc06ee7adaadbf4958f0af188e0cf831d1f061034d584d2b56a0",
+        "signature": "903b143b9415872430d2c9b37b5fb149a4825b37ccb09276e1c163ae088acefc",
+>>>>>>> 437954450c2c22ae49b87628ea0a7c927628af21
         "affectsGlobalScope": false
       },
       "../src/lib/QtumTestProvider.ts": {
@@ -1475,8 +1490,10 @@
         "../node_modules/@ethersproject/properties/lib/index.d.ts",
         "../node_modules/@ethersproject/random/lib/index.d.ts",
         "../node_modules/@ethersproject/signing-key/lib/index.d.ts",
+        "../node_modules/@ethersproject/strings/lib/index.d.ts",
         "../node_modules/@ethersproject/transactions/lib/index.d.ts",
         "../node_modules/@ethersproject/wordlists/lib/index.d.ts",
+        "../node_modules/@types/secp256k1/index.d.ts",
         "../src/lib/helpers/utils.ts"
       ],
       "../src/lib/helpers/buffer-cursor.ts": [

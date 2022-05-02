@@ -3,21 +3,47 @@ import { getAddress } from "@ethersproject/address";
 import { Provider, TransactionRequest } from "@ethersproject/abstract-provider";
 import { ExternallyOwnedAccount, Signer, TypedDataDomain, TypedDataField, TypedDataSigner } from "@ethersproject/abstract-signer";
 import { arrayify, Bytes, BytesLike, concat, hexDataSlice, isHexString, joinSignature, SignatureLike } from "@ethersproject/bytes";
-import { hashMessage, _TypedDataEncoder } from "@ethersproject/hash";
+import { _TypedDataEncoder } from "@ethersproject/hash";
+import { toUtf8Bytes } from "@ethersproject/strings";
 import { defaultPath, HDNode, entropyToMnemonic, Mnemonic } from "@ethersproject/hdnode";
 import { keccak256 } from "@ethersproject/keccak256";
 import { defineReadOnly, resolveProperties } from "@ethersproject/properties";
 import { randomBytes } from "@ethersproject/random";
 import { SigningKey } from "@ethersproject/signing-key";
 import { decryptJsonWallet, decryptJsonWalletSync, encryptKeystore, ProgressCallback } from "@ethersproject/json-wallets";
-import { recoverAddress, serialize, UnsignedTransaction } from "@ethersproject/transactions";
+import { serialize, UnsignedTransaction } from "@ethersproject/transactions";
 import { Wordlist } from "@ethersproject/wordlists";
 import { computeAddress, computeAddressFromPublicKey} from "./utils"
 import { computeAddress as computeEthereumAddress } from "@ethersproject/transactions";
 import { Logger } from "@ethersproject/logger";
+import secp256k1 from "secp256k1";
 import wif from 'wif';
 export const version = "wallet/5.1.0";
 const logger = new Logger(version);
+
+export const messagePrefix = "\x15Qtum Signed Message:\n";
+
+export function hashMessage(message: Bytes | string): string {
+    if (typeof(message) === "string") { message = toUtf8Bytes(message); }
+    return keccak256(concat([
+        toUtf8Bytes(messagePrefix),
+        toUtf8Bytes(String(message.length)),
+        message
+    ]));
+}
+
+function encodeSignatureRSV(signature, recovery, compressed, segwitType) {
+    /*
+    if (segwitType !== undefined) {
+      recovery += 8
+      if (segwitType === SEGWIT_TYPES.P2WPKH) recovery += 4
+    } else {
+        */
+      if (compressed) recovery += 4
+    // }
+    // return Buffer.concat([Buffer.alloc(1, recovery + 27), signature])
+    return Buffer.concat([signature, Buffer.alloc(1, recovery + 27)])
+}
 
 function isAccount(value: any): value is ExternallyOwnedAccount {
     return (value != null && isHexString(value.privateKey, 32) && value.address != null);
@@ -142,7 +168,18 @@ export class IntermediateWallet extends Signer implements ExternallyOwnedAccount
     }
 
     async signMessage(message: Bytes | string): Promise<string> {
-        return joinSignature(this._signingKey().signDigest(hashMessage(message)));
+        const digest = hashMessage(message);
+        return await this.signHash(arrayify(digest));
+    }
+
+    async signHash(message: Bytes | string): Promise<string> {
+        if (typeof(message) === "string") { message = toUtf8Bytes(message); }
+        const sigObj = secp256k1.ecdsaSign(message, Buffer.from(this.privateKey.slice(2), "hex"));
+        return encodeSignatureRSV(
+            sigObj.signature,
+            sigObj.recid,
+            true,
+        );
     }
 
     async _signTypedData(domain: TypedDataDomain, types: Record<string, Array<TypedDataField>>, value: Record<string, any>): Promise<string> {
@@ -157,7 +194,7 @@ export class IntermediateWallet extends Signer implements ExternallyOwnedAccount
             return this.provider.resolveName(name);
         });
 
-        return joinSignature(this._signingKey().signDigest(_TypedDataEncoder.hash(populated.domain, types, populated.value)));
+        return await this.signHash(_TypedDataEncoder.hash(populated.domain, types, populated.value));
     }
 
     encrypt(password: Bytes | string, options?: any, progressCallback?: ProgressCallback): Promise<string> {
@@ -210,6 +247,14 @@ export class IntermediateWallet extends Signer implements ExternallyOwnedAccount
 
 export function verifyMessage(message: Bytes | string, signature: SignatureLike): string {
     return recoverAddress(hashMessage(message), signature);
+}
+
+export function verifyHash(message: Bytes | string, signature: SignatureLike): string {
+    return recoverAddress(message, signature);
+}
+
+export function recoverAddress(digest: BytesLike, signature: SignatureLike): string {
+    return computeAddress(recoverPublicKey(arrayify(digest), signature));
 }
 
 export function verifyTypedData(domain: TypedDataDomain, types: Record<string, Array<TypedDataField>>, value: Record<string, any>, signature: SignatureLike): string {
