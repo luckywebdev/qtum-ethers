@@ -373,6 +373,7 @@ export async function addVins(outputs: Array<any>, utxos: Array<ListUTXOs>, need
     let vbytes = BigNumberEthers.from(GLOBAL_VARS.TX_OVERHEAD_BASE);
     const spendVSizeLookupMap = {
         p2pkh: BigNumberEthers.from(GLOBAL_VARS.TX_INPUT_BASE + GLOBAL_VARS.TX_INPUT_SCRIPTSIG_P2PKH).toNumber(),
+        p2pk: BigNumberEthers.from(GLOBAL_VARS.TX_INPUT_BASE + GLOBAL_VARS.TX_INPUT_SCRIPTSIG_P2PK).toNumber()
     }
     const changeType = 'p2pkh';
     const outputVSizeLookupMap = {
@@ -404,6 +405,7 @@ export async function addVins(outputs: Array<any>, utxos: Array<ListUTXOs>, need
     }
     let needMoreInputs = true;
     let i = 0;
+    console.log('[sqtum ethers spendableUtxos]', spendableUtxos, spendableUtxos.length)
     for (i = 0; i < spendableUtxos.length; i++) {
         const spendableUtxo = spendableUtxos[i];
         // investigate issue where amount has no decimal point as calculation panics
@@ -417,7 +419,9 @@ export async function addVins(outputs: Array<any>, utxos: Array<ListUTXOs>, need
         if (typ.toLowerCase() === "p2pkh") {
             script = p2pkhScript(Buffer.from(hash160PubKey, "hex"));
         }
+        console.log('[sqtum ethers spendableUtxos type]', typ, typ.toLowerCase(), spendVSizeLookupMap.hasOwnProperty(typ.toLowerCase()))
         if (!spendVSizeLookupMap.hasOwnProperty(typ.toLowerCase())) {
+            console.log("Unsupported spendable script type: " + typ.toLowerCase());
             throw new Error("Unsupported spendable script type: " + typ.toLowerCase());
         }
         inputs.push({
@@ -428,14 +432,17 @@ export async function addVins(outputs: Array<any>, utxos: Array<ListUTXOs>, need
             script: script,
             scriptSig: null
         });
+        console.log(`[sqtum ethers spendableUtxos -0 - ${i}]`, inputs)
         // @ts-ignore
         const outputVSize: number = spendVSizeLookupMap[typ.toLowerCase()];
+        console.log('[sqtum ethers spendableUtxos -1]', outputVSize, typ)
         vbytes = vbytes.add(outputVSize);
         const fee = BigNumberEthers.from(vbytes).mul(gasPrice);
 
         inputsAmount = inputsAmount.add(utxoValue);
         amounts.push(utxoValue);
 
+        console.log(`[sqtum ethers spendableUtxos -2 ]`, neededAmountBN.toString(), inputsAmount.toString())
         if (neededAmountBN.eq(inputsAmount)) {
             if (i === spendableUtxos.length - 1) {
                 // reached end
@@ -448,6 +455,7 @@ export async function addVins(outputs: Array<any>, utxos: Array<ListUTXOs>, need
                 // confirm that there is enough in inputs to cover network fees
                 const neededAmountPlusFees = neededAmountBN.add(fee);
                 const neededAmountPlusFeesAndChange = neededAmountPlusFees.add(outputVSizeLookupMap[changeType]);
+                console.log(`[sqtum ethers spendableUtxos -2-1]`, neededAmountPlusFees.toString(), neededAmountPlusFeesAndChange.toString(), inputsAmount.toString())
                 if (inputsAmount.eq(neededAmountPlusFees)) {
                     // no change output required, matches exactly
                     needMoreInputs = false;
@@ -465,6 +473,7 @@ export async function addVins(outputs: Array<any>, utxos: Array<ListUTXOs>, need
             // have enough, check that there is enough change to cover fees
             const totalNeededPlusFees = totalNeeded.add(fee);
             const totalNeededPlusFeesAndChange = totalNeededPlusFees.add(outputVSizeLookupMap[changeType]);
+            console.log(`[sqtum ethers spendableUtxos -2-2]`, totalNeeded.toString(), totalNeededPlusFees.toString(), totalNeededPlusFeesAndChange.toString())
             if (inputsAmount.eq(totalNeededPlusFees)) {
                 // no change output required, matches exactly
                 needMoreInputs = false;
@@ -480,6 +489,7 @@ export async function addVins(outputs: Array<any>, utxos: Array<ListUTXOs>, need
         } else {
             // neededAmountBN.gt(inputsAmount)
         }
+        console.log(`[sqtum ethers spendableUtxos -3 ${i}]`, needMoreInputs)
 
         if (!needMoreInputs) {
             break;
@@ -773,6 +783,7 @@ export async function serializeTransactionWith(utxos: Array<any>, neededAmount: 
 
     // Sign necessary vins
     const updatedVins = [];
+    console.log('[qtum-ethers serializeTransactionWith 0]', qtumTx.vins, vins);
     for (let i = 0; i < qtumTx.vins.length; i++) {
         updatedVins.push({ ...qtumTx.vins[i], ['scriptSig']: p2pkhScriptSig(await signp2pkhWith(qtumTx, i, signer), publicKey.split("0x")[1]) })
     }

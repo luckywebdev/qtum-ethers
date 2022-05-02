@@ -757,8 +757,8 @@
         "affectsGlobalScope": false
       },
       "../src/lib/helpers/global-vars.ts": {
-        "version": "b0108d4fbc382c485e75f4b51a471445f453f828c6569594d59ebe07ad4929d1",
-        "signature": "3c7a96e931acc93996a659bcad39418495c722845bf0c6ccf4a5d7d09ca1487c",
+        "version": "c16423162eca01cc7b75cfef5ca25db9c041096c5f40cc88a7cb50b2531cbf61",
+        "signature": "0a30fa2cfe9fd8de2065a1f69209a4d4713a9134f92b6729b2fbbba067577bb5",
         "affectsGlobalScope": false
       },
       "../node_modules/@types/bn.js/index.d.ts": {
@@ -792,13 +792,13 @@
         "affectsGlobalScope": false
       },
       "../src/lib/helpers/utils.ts": {
-        "version": "c2a3f4852d45ec59a40432852cd7796461ab36d6cdfe41b5927e2bfb4879c77b",
+        "version": "eda7d3cd8630ed951322c6ea5b85cdadd0548f129921ea6f44e6a81befe9b61d",
         "signature": "1e4c0e94a4f29766cf4888f8ce71594b79445af3ac2193e4538e4c552caf398b",
         "affectsGlobalScope": false
       },
       "../src/lib/QtumProvider.ts": {
-        "version": "2358bd9ded81e761e373dd175298bc416f818f23d979f70ab689d31bdde61e4a",
-        "signature": "512c7d1b93ba140c39ace7650acf1addb584f5f626feaed1f9c28ba2dbe61e13",
+        "version": "ab28864e4058e6ace303b99ca8c4d7d4174958c331f93d092625117d09505794",
+        "signature": "7643ea41363670c3877b6f8a5af888d694eeb617c3492a23fb8e05001c3b35aa",
         "affectsGlobalScope": false
       },
       "../src/lib/QtumFunctionProvider.ts": {
@@ -812,7 +812,7 @@
         "affectsGlobalScope": false
       },
       "../src/lib/QtumWallet.ts": {
-        "version": "482ccf4af584893decfa53840d111ab16db1a6b4b4c421621926289c90655144",
+        "version": "11a51b9ae5c0fa03459f0a98a0124e9900f647e7b4abe8941fbe08efb39c7ecf",
         "signature": "2430362dd4ee234e9193d69693d390da6d938be756f354666c01cfd3b650ab36",
         "affectsGlobalScope": false
       },

@@ -7,6 +7,7 @@ export declare const GLOBAL_VARS: {
     TX_INPUT_SCRIPTSIGLENGTH: number;
     TX_INPUT_NSEQUENCE: number;
     TX_OVERHEAD_OUTPUT_COUNT: number;
+    TX_INPUT_SCRIPTSIG_P2PK: number;
     TX_INPUT_SCRIPTSIG_P2PKH: number;
     TX_INPUT_SCRIPTSIG_P2SH2OF3: number;
     TX_OUTPUT_BASE: number;

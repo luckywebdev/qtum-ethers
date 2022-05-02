@@ -22,8 +22,8 @@
     "varuint-bitcoin": "1.1.0",
     "wif": "^2.0.6"
   },
-  "name": "qtum-qnekt",
-  "version": "0.1.6",
+  "name": "qtum-qnekt-ethers",
+  "version": "0.0.4",
   "main": "./build/main/index.js",
   "license": "ISC",
   "homepage": "https://github.com/luckywebdev/qtum-ethers",

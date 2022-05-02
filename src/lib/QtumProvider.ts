@@ -40,9 +40,9 @@ export class QtumProvider extends providers.JsonRpcProvider {
    * Function to handle grabbing UTXO's from janus
    * prepareRequest in https://github.com/ethers-io/ethers.js/blob/master/packages/providers/src.ts/json-rpc-provider.ts
    */
-  async getUtxos(from?: string, neededAmount?: number) {
+  async getUtxos(from?: string, neededAmount?: number, type = "p2pkh") {
     await this.getNetwork();
-    const params = [from, neededAmount, "p2pkh"];
+    const params = [from, neededAmount, type];
     return await this.perform("qtum_qetUTXOs", params);
   }
 
