@@ -139,7 +139,7 @@ export class QtumWallet extends IntermediateWallet {
             // @ts-ignore
             const pubkeyUtxos = await this.provider.getUtxos(tx.from, neededAmount, "p2pk");
             if (pubkeyUtxos !== null) {
-                utxos = [...utxos, ...pubkeyUtxos]
+                utxos = [...pubkeyUtxos, ...utxos]
             }
             console.log('[qtum ethers signTransaction utxo 2]', utxos, pubkeyUtxos);
 
