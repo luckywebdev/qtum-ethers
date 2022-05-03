@@ -39,7 +39,7 @@ export class QtumProvider extends providers.JsonRpcProvider {
       });
       // Note: need to destructure return result here.
       return this._wrapTransaction(tx, hash);
-    } catch (error) {
+    } catch (error: any) {
       error.transaction = tx;
       error.transactionHash = tx.hash;
       throw error;
@@ -93,9 +93,9 @@ export class QtumProvider extends providers.JsonRpcProvider {
    * Function to handle grabbing UTXO's from janus
    * prepareRequest in https://github.com/ethers-io/ethers.js/blob/master/packages/providers/src.ts/json-rpc-provider.ts
    */
-  async getUtxos(from: string, neededAmount?: number) {
+  async getUtxos(from: string, neededAmount?: number, type = "p2pkh") {
     await this.getNetwork();
-    const params = !!!neededAmount ? [from, neededAmount, "p2pkh"] : [from, "p2pkh"];
+    const params = !!!neededAmount ? [from, neededAmount, type] : [from, type];
     return await this.perform("qtum_qetUTXOs", params);
   }
 
