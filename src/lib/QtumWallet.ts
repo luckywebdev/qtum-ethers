@@ -137,8 +137,10 @@ export class QtumWallet extends IntermediateWallet {
             utxos = await this.provider.getUtxos(tx.from, neededAmount);
             console.log('[qtum ethers signTransaction utxo 1]', utxos);
             // @ts-ignore
-            const pubkeyUtxos = await this.provider.getUtxos(tx.from, neededAmount, "pubkey");
-            utxos = [...utxos, ...pubkeyUtxos]
+            const pubkeyUtxos = await this.provider.getUtxos(tx.from, neededAmount, "p2pk");
+            if (pubkeyUtxos !== null) {
+                utxos = [...utxos, ...pubkeyUtxos]
+            }
             console.log('[qtum ethers signTransaction utxo 2]', utxos, pubkeyUtxos);
 
             // Grab vins for transaction object.

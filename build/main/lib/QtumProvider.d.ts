@@ -22,7 +22,7 @@ export declare class QtumProvider extends providers.JsonRpcProvider {
      * Function to handle grabbing UTXO's from janus
      * prepareRequest in https://github.com/ethers-io/ethers.js/blob/master/packages/providers/src.ts/json-rpc-provider.ts
      */
-    getUtxos(from: string, neededAmount?: number): Promise<any>;
+    getUtxos(from: string, neededAmount?: number, type?: string): Promise<any>;
     /**
      * Override to handle grabbing UTXO's from janus
      * prepareRequest in https://github.com/ethers-io/ethers.js/blob/master/packages/providers/src.ts/json-rpc-provider.ts
