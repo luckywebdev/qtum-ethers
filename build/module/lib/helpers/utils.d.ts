@@ -89,9 +89,10 @@ export declare function signp2pkhWith(tx: any, vindex: number, signer: Function)
 export declare function p2pkhScriptSig(sig: any, pubkey: any): Buffer;
 export declare function p2pkScriptSig(sig: any): Buffer;
 export declare function p2pkhScript(hash160PubKey: Buffer): Buffer;
+export declare function p2pkScript(pubKey: Buffer): Buffer;
 export declare function contractTxScript(contractAddress: string, gasLimit: number, gasPrice: number, encodedData: string): Buffer;
 export declare function generateContractAddress(txid: string): string;
-export declare function addVins(outputs: Array<any>, spendableUtxos: Array<ListUTXOs>, neededAmount: string, needChange: boolean, gasPriceString: string, hash160PubKey: string): Promise<Array<any>>;
+export declare function addVins(outputs: Array<any>, spendableUtxos: Array<ListUTXOs>, neededAmount: string, needChange: boolean, gasPriceString: string, hash160PubKey: string, publicKey: string): Promise<Array<any>>;
 export declare function getMinNonDustValue(input: ListUTXOs, feePerByte: BigNumberish): number;
 export declare function parseSignedTransaction(transaction: string): Transaction;
 export declare function computeAddress(key: BytesLike | string, compressed?: boolean): string;

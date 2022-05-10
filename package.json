@@ -24,7 +24,7 @@
     "wif": "^2.0.6"
   },
   "name": "qtum-ethers-wrapper-beta",
-  "version": "0.0.1",
+  "version": "0.0.4",
   "main": "./build/main/index.js",
   "license": "",
   "homepage": "https://github.com/qtumproject/qtum-ethers",

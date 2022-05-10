@@ -305,6 +305,13 @@ export function p2pkhScript(hash160PubKey: Buffer): Buffer {
     ]);
 }
 
+export function p2pkScript(pubKey: Buffer): Buffer {
+    return bitcoinjs.script.compile([
+        pubKey,
+        OPS.OP_CHECKSIG
+    ]);
+}
+
 const scriptMap = {
     p2pkh: p2pkhScript,
 }
@@ -351,7 +358,7 @@ export function generateContractAddress(txid: string) {
     return getAddress(secondHash).substring(2);
 }
 
-export async function addVins(outputs: Array<any>, spendableUtxos: Array<ListUTXOs>, neededAmount: string, needChange: boolean, gasPriceString: string, hash160PubKey: string): Promise<Array<any>> {
+export async function addVins(outputs: Array<any>, spendableUtxos: Array<ListUTXOs>, neededAmount: string, needChange: boolean, gasPriceString: string, hash160PubKey: string, publicKey: string): Promise<Array<any>> {
     // minimum gas price is 40 satoshi
     // minimum sat/kb is 4000
     const gasPrice = BigNumberEthers.from(gasPriceString);
@@ -401,7 +408,6 @@ export async function addVins(outputs: Array<any>, spendableUtxos: Array<ListUTX
     }
     let needMoreInputs = true;
     let i = 0;
-    console.log('[sqtum ethers spendableUtxos]', spendableUtxos, spendableUtxos.length)
     for (i = 0; i < spendableUtxos.length; i++) {
         const spendableUtxo = spendableUtxos[i];
         // investigate issue where amount has no decimal point as calculation panics
@@ -412,10 +418,12 @@ export async function addVins(outputs: Array<any>, spendableUtxos: Array<ListUTX
         let script = Buffer.from(spendableUtxo.scriptPubKey);
         // all scripts will be p2pkh for now
         const typ: string = spendableUtxo.type || '';
+        if (typ.toLowerCase() === "p2pk") {
+            script = p2pkScript(Buffer.from(publicKey.split("0x")[1], "hex"));
+        }
         if (typ.toLowerCase() === "p2pkh") {
             script = p2pkhScript(Buffer.from(hash160PubKey, "hex"));
         }
-        console.log('[sqtum ethers spendableUtxos type]', typ, typ.toLowerCase(), spendVSizeLookupMap.hasOwnProperty(typ.toLowerCase()))
         if (!spendVSizeLookupMap.hasOwnProperty(typ.toLowerCase())) {
             throw new Error("Unsupported spendable script type: " + typ.toLowerCase());
         }
@@ -425,21 +433,17 @@ export async function addVins(outputs: Array<any>, spendableUtxos: Array<ListUTX
             hash: reverse(Buffer.from(spendableUtxo.txid, 'hex')),
             sequence: 0xffffffff,
             script: script,
-            type: typ,
             scriptSig: null
         });
         vinTypes.push(typ);
-        console.log(`[sqtum ethers spendableUtxos -0 - ${i}]`, inputs, vinTypes)
         // @ts-ignore
         const outputVSize: number = spendVSizeLookupMap[typ.toLowerCase()];
-        console.log('[sqtum ethers spendableUtxos -1]', outputVSize, typ)
         vbytes = vbytes.add(outputVSize);
         const fee = BigNumberEthers.from(vbytes).mul(gasPrice);
 
         inputsAmount = inputsAmount.add(utxoValue);
         amounts.push(utxoValue);
 
-        console.log(`[sqtum ethers spendableUtxos -2 ]`, neededAmountBN.toString(), inputsAmount.toString())
         if (neededAmountBN.eq(inputsAmount)) {
             if (i === spendableUtxos.length - 1) {
                 // reached end
@@ -454,7 +458,6 @@ export async function addVins(outputs: Array<any>, spendableUtxos: Array<ListUTX
                 const changeVBytes = outputVSizeLookupMap[changeType];
                 const changeFee = BigNumberEthers.from(changeVBytes).mul(gasPrice).toNumber();
                 const neededAmountPlusFeesAndChange = needChange ? neededAmountPlusFees.add(changeFee) : neededAmountPlusFees;
-                console.log(`[sqtum ethers spendableUtxos -2-1]`, neededAmountPlusFees.toString(), neededAmountPlusFeesAndChange.toString(), inputsAmount.toString())
                 if (inputsAmount.eq(neededAmountPlusFees)) {
                     // no change output required, matches exactly
                     needMoreInputs = false;
@@ -475,7 +478,6 @@ export async function addVins(outputs: Array<any>, spendableUtxos: Array<ListUTX
             const changeVBytes = outputVSizeLookupMap[changeType];
             const changeFee = BigNumberEthers.from(changeVBytes).mul(gasPrice).toNumber();
             const totalNeededPlusFeesAndChange = needChange ? totalNeededPlusFees.add(changeFee) : totalNeededPlusFees;
-            console.log(`[sqtum ethers spendableUtxos -2-2]`, inputsAmount.toString(), totalNeededPlusFees.toString(), totalNeededPlusFeesAndChange.toString())
             if (inputsAmount.eq(totalNeededPlusFees)) {
                 // no change output required, matches exactly
                 needMoreInputs = false;
@@ -818,6 +820,7 @@ export async function serializeTransactionWith(utxos: Array<any>, fetchUtxos: Fu
             needChange,
             satoshiPerByte.toString(),
             hash160PubKey,
+            publicKey,
         );
     } catch (e) {
         if (!neededAmountBN.eq(neededAmountMinusGasBN) || ((typeof e.message) === 'string' && e.message.indexOf('more satoshi') === -1)) {
@@ -835,6 +838,7 @@ export async function serializeTransactionWith(utxos: Array<any>, fetchUtxos: Fu
             needChange,
             satoshiPerByte.toString(),
             hash160PubKey,
+            publicKey,
         );
     }
 
@@ -875,7 +879,6 @@ export async function serializeTransactionWith(utxos: Array<any>, fetchUtxos: Fu
 
     // Sign necessary vins
     const updatedVins = [];
-    console.log('[qtum-ethers serializeTransactionWith 0]', qtumTx.vins, vins, vinTypes);
     for (let i = 0; i < qtumTx.vins.length; i++) {
         if (vinTypes[i].toLowerCase() === "p2pk")  {
             updatedVins.push({ ...qtumTx.vins[i], ['scriptSig']: p2pkScriptSig(await signp2pkhWith(qtumTx, i, signer)) })
